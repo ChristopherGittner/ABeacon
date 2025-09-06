@@ -45,24 +45,41 @@ class MainActivity : ComponentActivity() {
         const val UUID = "uuid"
     }
 
-    private val requestPermissionsLauncher = registerForActivityResult(
+    private val requestPermissionsLauncherStage1 = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         bluetoothPermissionOk.value = (permissions[android.Manifest.permission.BLUETOOTH_ADVERTISE] == true
                 && permissions[android.Manifest.permission.BLUETOOTH_SCAN] == true
                 && permissions[android.Manifest.permission.BLUETOOTH_CONNECT] == true)
-        locationPermissionOk.value = (permissions[android.Manifest.permission.ACCESS_FINE_LOCATION] == true)
         notificationPermissionOk.value = (permissions[android.Manifest.permission.POST_NOTIFICATIONS] == true)
 
-        if (bluetoothPermissionOk.value && locationPermissionOk.value && notificationPermissionOk.value) {
-            Log.i("MainActivity", "All permissions granted")
+        if (bluetoothPermissionOk.value && notificationPermissionOk.value) {
+            Log.i("MainActivity Permissions Stage 1", "All permissions granted")
             // Start the BackgroundService
             startService(Intent(this, BackgroundService::class.java))
         } else {
-            Log.e("MainActivity", "Not all permissions granted: $permissions")
+            Log.e("MainActivity Permissions Stage 1", "Not all permissions granted: $permissions")
         }
 
-        requestBackgroundOptimizationResult.launch(null)
+        requestPermissionsLauncherStage2.launch(arrayOf(
+            android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ))
+    }
+
+    private val requestPermissionsLauncherStage2 = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        locationPermissionOk.value = (permissions[android.Manifest.permission.ACCESS_BACKGROUND_LOCATION] == true)
+
+        if (locationPermissionOk.value) {
+            Log.i("MainActivity Permissions Stage 2", "Location permission granted")
+            // Start the BackgroundService
+            startService(Intent(this, BackgroundService::class.java))
+
+            requestBackgroundOptimizationResult.launch(null)
+        } else {
+            Log.e("MainActivity Permissions Stage 2", "Location permission not granted: $permissions")
+        }
     }
 
     private val requestBackgroundOptimizationResult = registerForActivityResult(DisableBgOptimization()) {
@@ -115,7 +132,7 @@ class MainActivity : ComponentActivity() {
 
         // Request permissions
         Log.i("MainActivity", "Requesting permissions")
-        requestPermissionsLauncher.launch(arrayOf(
+        requestPermissionsLauncherStage1.launch(arrayOf(
             android.Manifest.permission.BLUETOOTH_ADVERTISE,
             android.Manifest.permission.BLUETOOTH_SCAN,
             android.Manifest.permission.BLUETOOTH_CONNECT,

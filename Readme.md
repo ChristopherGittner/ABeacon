@@ -9,7 +9,7 @@ This Beacon Frames can be captured for example by an ESP with Tasmota or ESPrese
 ## Permissions
 When the App is first started it will ask for the following Permissions:
 
-* Location - Required to transmit the Beacon
+* Location (Background) - Required to transmit the Beacon
 * Nearby Devices - Required to transmit the Beacon
 * Notifications - Required to keep the App running in Background
 * Disable Battery Optimization - Required to keep the App running in Background
