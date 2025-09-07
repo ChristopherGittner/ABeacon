@@ -13,3 +13,7 @@ When the app is first started, it will ask for the following permissions:
 * Nearby Devices - Required to transmit the beacon
 * Notifications - Required to keep the app running in the background
 * Disable Battery Optimization - Required to keep the app running in the background
+
+## Third-Party Libraries
+This app uses the following non Android third-party libraries:
+* https://github.com/AltBeacon/android-beacon-library
